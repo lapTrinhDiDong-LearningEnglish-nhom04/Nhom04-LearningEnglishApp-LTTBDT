@@ -1,6 +1,7 @@
 package com.example.myapplication.UI;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.myapplication.Adapter.CategoryAdapter;
 import com.example.myapplication.Adapter.LuyenThiApdapter;
+import com.example.myapplication.DB.Database;
 import com.example.myapplication.Entity.Book;
 import com.example.myapplication.Entity.Category;
 import com.example.myapplication.Entity.LuyenThi;
@@ -31,6 +33,9 @@ import java.util.List;
 public class LuyenThiFragment extends Fragment {
     private RecyclerView recyclerView;
     private LuyenThiApdapter luyenThiApdapter;
+
+    Database db;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -78,6 +83,7 @@ public class LuyenThiFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_luyenthi, container, false);
         recyclerView  = view.findViewById(R.id.rcv_categoryLuyenThi);
+        db = new Database(getContext());
 
         luyenThiApdapter = new LuyenThiApdapter(getListLuyenThi(), new InterfaceClickItemLuyenThiListener() {
             @Override
@@ -101,16 +107,21 @@ public class LuyenThiFragment extends Fragment {
 
     private List<LuyenThi> getListLuyenThi() {
         List<LuyenThi> list= new ArrayList<>();
-        list.add(new LuyenThi("Test 1",2,2));
-        list.add(new LuyenThi("Test 2",3,3));
-        list.add(new LuyenThi("Test 3",2,2));
-        list.add(new LuyenThi("Test 4",4,4));
-        list.add(new LuyenThi("Test 5",1,1));
-        list.add(new LuyenThi("Test 6",2,2));
-        list.add(new LuyenThi("Test 7",2,2));
-        list.add(new LuyenThi("Test 8",2,2));
-        list.add(new LuyenThi("Test 9",2,2));
-        list.add(new LuyenThi("Test 10",2,2));
+        try {
+            Cursor cursor = db.query_hasresult("select * from LuyenThi");
+            if (cursor.getCount() != 0){
+                while (cursor.moveToNext()){
+                    String ten = cursor.getString(1);
+                    list.add(new LuyenThi(ten,2,2));
+                }
+            }else{
+                list.add(null);
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return  list;
     }
 

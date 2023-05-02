@@ -100,5 +100,25 @@
 
     </TextView>
 
+    <Button
+        android:id="@+id/btnView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPercent"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="165dp"
+        android:text="BtnView" />
+
+    <TextView
+        android:id="@+id/tvDs"
+        android:layout_width="165dp"
+        android:layout_height="109dp"
+        android:layout_below="@+id/btnView"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="78dp"
+        android:text="TextView" />
+
 
 </RelativeLayout>
