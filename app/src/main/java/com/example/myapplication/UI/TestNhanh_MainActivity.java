@@ -3,6 +3,7 @@ package com.example.myapplication.UI;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -12,18 +13,20 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.DB.Database;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 
 public class TestNhanh_MainActivity extends AppCompatActivity {
 
 
-    TextView tvNameTestNhanh,tvArrowBack, tvPercent;
+    TextView tvNameTestNhanh,tvArrowBack, tvDs, tvPercent;
     ProgressBar processBar;
     SeekBar seekBar;
-    Button btnStart, btnPause, btnStop;
+    Button btnStart, btnPause, btnStop,btnView;
 
     MediaPlayer mediaPlayer;
-
+    Database db;
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +40,9 @@ public class TestNhanh_MainActivity extends AppCompatActivity {
         processBar = findViewById(R.id.progressBar);
         seekBar = findViewById(R.id.seekBar);
         tvPercent = findViewById(R.id.tvPercent);
-
+        btnView = findViewById(R.id.btnView);
+        tvDs = findViewById(R.id.tvDs);
+        db = new Database(TestNhanh_MainActivity.this);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            int progressChangedValue = 0;
             @Override
@@ -82,6 +87,28 @@ public class TestNhanh_MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 stop(v);
+            }
+        });
+
+        btnView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Cursor cursor = db.query_hasresult("select * from LuyenThi");
+                    String ds = "";
+                    if (cursor.getCount() != 0){
+                        while (cursor.moveToNext()){
+                            int id = cursor.getInt(0);
+                            String ten = cursor.getString(1);
+                            ds += id + " - " + ten + "\n";
+                        }
+                    }else{
+                        ds = "Không có dữ liệu";
+                    }
+                    tvDs.setText(ds);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 

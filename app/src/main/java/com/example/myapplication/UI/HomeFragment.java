@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -127,10 +128,13 @@ public class HomeFragment extends Fragment {
 
         // ĐỌC HIỂU
         recyclerViewDH  = view.findViewById(R.id.rcv_categoryDH);
+
+
         categoryAdapterDH = new BookAdapter(getListCategoryDH(), new InterfaceClickItemListener() {
             @Override
             public void onClickItem(Book book) {
-                onClickGoToDetailDH(book);
+                Log.d("TAG", "onClickItem: "+book.getResoutceId());
+                    onClickGoToDetailDH(book);
             }
 
             @Override
@@ -195,9 +199,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void onClickGoToDetailDH(Book book){
-        Intent intent = new Intent(getContext(), ItemTrangChuActivity.class);
+        Intent intent = new Intent(getContext(), ItemTrangChuDocHieuActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("book_item", book);
+        bundle.putSerializable("docHieu_item", book);
+        bundle.putSerializable("id_item", book.getResoutceId());
         intent.putExtras(bundle);
         startActivity(intent);
     }
