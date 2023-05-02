@@ -186,11 +186,12 @@
                 android:textColor="@color/black">
             </TextView>
             <TextView
+                android:id="@+id/tvUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="thinhvq"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/border_black">
-
             </TextView>
         </LinearLayout>
 

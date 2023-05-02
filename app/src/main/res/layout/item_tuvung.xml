@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -21,7 +22,7 @@
             android:id="@+id/textTitleTiengAnh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tiếng anh:"
+            android:text="Tiếng Anh:"
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="@color/black"
@@ -46,7 +47,7 @@
             android:id="@+id/textTitleTiengViet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tiếng việt:"
+            android:text="Tiếng Việt:"
             android:textStyle="bold"
             android:textSize="16sp"
             android:textColor="@color/black"
@@ -69,6 +70,17 @@
             android:layout_marginTop="5dp">
         </TextView>
 
+        <CheckBox
+            android:id="@+id/chkLuuTuVung"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"></CheckBox>
 
 
     </RelativeLayout>

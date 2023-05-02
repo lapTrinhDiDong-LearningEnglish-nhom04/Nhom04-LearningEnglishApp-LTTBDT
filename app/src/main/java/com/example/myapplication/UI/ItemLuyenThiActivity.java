@@ -11,6 +11,7 @@ import com.example.myapplication.R;
 public class ItemLuyenThiActivity extends AppCompatActivity {
     TextView tvTitle;
     TextView tvSoCau;
+    TextView tvThoiGian;
 
     Bundle bundle;
     @Override
@@ -19,6 +20,7 @@ public class ItemLuyenThiActivity extends AppCompatActivity {
         setContentView(R.layout.activity_item_luyen_thi);
         tvTitle = findViewById(R.id.tvTitle);
         tvSoCau = findViewById(R.id.tvSoCau);
+        tvThoiGian = findViewById(R.id.tvThoiGian);
 
         bundle = getIntent().getExtras();
         if (bundle == null){
@@ -26,6 +28,7 @@ public class ItemLuyenThiActivity extends AppCompatActivity {
         }
         LuyenThi luyenThi = (LuyenThi) bundle.get("luyenThi_item");
         tvTitle.setText(luyenThi.getTitle());
-        tvSoCau.setText(luyenThi.getSoCauHoi() + "");
+        tvSoCau.setText("Câu hỏi: " + luyenThi.getSoCauHoi());
+        tvThoiGian.setText("Thời gian: " + luyenThi.getThoiGian() + " phút");
     }
 }

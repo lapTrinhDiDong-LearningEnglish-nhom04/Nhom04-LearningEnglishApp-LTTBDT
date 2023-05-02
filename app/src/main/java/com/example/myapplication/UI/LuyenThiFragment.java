@@ -1,6 +1,8 @@
 package com.example.myapplication.UI;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -31,6 +33,7 @@ import java.util.List;
 public class LuyenThiFragment extends Fragment {
     private RecyclerView recyclerView;
     private LuyenThiApdapter luyenThiApdapter;
+    private SQLiteDatabase database;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -101,17 +104,54 @@ public class LuyenThiFragment extends Fragment {
 
     private List<LuyenThi> getListLuyenThi() {
         List<LuyenThi> list= new ArrayList<>();
-        list.add(new LuyenThi("Test 1",2,2));
-        list.add(new LuyenThi("Test 2",3,3));
-        list.add(new LuyenThi("Test 3",2,2));
-        list.add(new LuyenThi("Test 4",4,4));
-        list.add(new LuyenThi("Test 5",1,1));
-        list.add(new LuyenThi("Test 6",2,2));
-        list.add(new LuyenThi("Test 7",2,2));
-        list.add(new LuyenThi("Test 8",2,2));
-        list.add(new LuyenThi("Test 9",2,2));
-        list.add(new LuyenThi("Test 10",2,2));
-        return  list;
+        try {
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            Cursor c = database.rawQuery("SELECT * FROM LuyenThi",null);
+            while(c.moveToNext()){
+                int id = c.getInt(0);
+                String ten = c.getString(1);
+                list.add(new LuyenThi(ten,getSoCauDHTheoID(id)+getSoCauNHTheoID(id),getSoCauDHTheoID(id)+getSoCauNHTheoID(id)));
+            }
+            database.close();
+            return list;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private int getSoCauDHTheoID(int id){
+        int soCau=0;
+        try {
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            String[] args = {String.valueOf(id)};
+            Cursor c = database.rawQuery("SELECT count(idDH) from LuyenThi t join LuyenThiDocHieu dh on t.idLT = dh.idLT GROUP BY t.idLT HAVING t.idLT = ?",args);
+            while(c.moveToNext()){
+                soCau = c.getInt(0);
+            }
+            database.close();
+            return soCau;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int getSoCauNHTheoID(int id){
+        int soCau=0;
+        try {
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            String[] args = {String.valueOf(id)};
+            Cursor c = database.rawQuery("SELECT count(idNH) from LuyenThi t join LuyenThiNgheHieu nh on t.idLT = nh.idLT GROUP BY t.idLT HAVING t.idLT = ?",args);
+            while(c.moveToNext()){
+                soCau = c.getInt(0);
+            }
+            database.close();
+            return soCau;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override

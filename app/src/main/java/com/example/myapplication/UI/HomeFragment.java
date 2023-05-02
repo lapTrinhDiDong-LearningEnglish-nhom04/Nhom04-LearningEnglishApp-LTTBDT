@@ -2,6 +2,8 @@ package com.example.myapplication.UI;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,17 +13,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.Adapter.BookAdapter;
 import com.example.myapplication.Adapter.CategoryAdapter;
 import com.example.myapplication.Entity.Book;
 import com.example.myapplication.Entity.Category;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.My_Interface.InterfaceClickItemListener;
 import com.example.myapplication.R;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,6 +47,11 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerViewNH;
     private BookAdapter categoryAdapterNH;
+    private TextView tvSoTuVungDaLuu;
+    private Button btnLuu;
+    private SQLiteDatabase database;
+
+
 
 
 
@@ -50,6 +63,7 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -88,7 +102,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        tvSoTuVungDaLuu = view.findViewById(R.id.tvSoTuVungLuu);
+        tvSoTuVungDaLuu.setText(String.valueOf(getSoTuVungDaluu(1)));
         //TỪ VỰNG
         recyclerViewTV  = view.findViewById(R.id.rcv_categoryTV);
         categoryAdapterTV = new BookAdapter(getListCategoryTV(), new InterfaceClickItemListener() {
@@ -142,6 +157,15 @@ public class HomeFragment extends Fragment {
         recyclerViewDH.setLayoutManager(linearLayoutManagerDH);
         categoryAdapterDH.setData(getListCategoryDH());
         recyclerViewDH.setAdapter(categoryAdapterDH);
+
+        //ÔN TẬP TỪ VỰNG
+        btnLuu = view.findViewById(R.id.btnOnTuVung);
+        btnLuu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickGoToDetailOTTV(1);
+            }
+        });
         return view;
     }
 
@@ -162,16 +186,55 @@ public class HomeFragment extends Fragment {
 
     private List<Book> getListCategoryTV() {
         List<Book> bookListTuVung = new ArrayList<>();
-        bookListTuVung.add(new Book( R.drawable.giao_thong,"Giao thông"));
-        bookListTuVung.add(new Book( R.drawable.thoi_tiet,"Bản tin \nthời tiết"));
-        bookListTuVung.add(new Book( R.drawable.meo3, "Xây dựng"));
-        bookListTuVung.add(new Book( R.drawable.xuat_nhap_khau,"Xuất nhập \nkhẩu"));
-        bookListTuVung.add(new Book( R.drawable.dong_vat, "Động vật"));
-        bookListTuVung.add(new Book( R.drawable.thoi_tiet,"Thời tiết"));
-        bookListTuVung.add(new Book( R.drawable.giai_tri, "Giải trí"));
-        bookListTuVung.add(new Book( R.drawable.du_lich,"Di lịch"));
+        try {
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            Cursor c = database.rawQuery("Select * from ChuDe",null);
+            while(c.moveToNext()){
+                String ten = c.getString(1);
+                String hinhAnh = c.getString(2);
+                int resourceId = this.getContext().getResources().getIdentifier(hinhAnh, "drawable", this.getContext().getPackageName());
+                bookListTuVung.add(new Book(resourceId, ten));
+            }
+            database.close();
+            return bookListTuVung;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-        return bookListTuVung;
+    private int getSoTuVungDaluu(int idND){
+        int sl=0;
+        try {
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            String[] args = {String.valueOf(idND)};
+            Cursor c = database.rawQuery("SELECT idND, COUNT(DISTINCT idTuVung) AS soLuong FROM ChiTietTuVung GROUP BY idND HAVING idND = ?",args);
+            while(c.moveToNext()){
+                sl = c.getInt(1);
+            }
+            database.close();
+            return sl;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int getIdTheoUserName(String userName){
+        int id=0;
+        try {
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            String[] args = {userName};
+            Cursor c = database.rawQuery("SELECT idND FROM NguoiDung n JOIN TaiKhoan t on n.idTaiKhoan = t.userName WHERE userName = ?",args);
+            while(c.moveToNext()){
+                id = c.getInt(0);
+            }
+            database.close();
+            return id;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
@@ -198,6 +261,14 @@ public class HomeFragment extends Fragment {
         Intent intent = new Intent(getContext(), ItemTrangChuActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("book_item", book);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    private void onClickGoToDetailOTTV(int idND){
+        Intent intent = new Intent(getContext(), ItemOnTapTuVungActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ontaptuVung_item", idND);
         intent.putExtras(bundle);
         startActivity(intent);
     }

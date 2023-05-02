@@ -1,5 +1,8 @@
 package com.example.myapplication.UI;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,7 +10,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 
 /**
@@ -25,6 +30,8 @@ public class TaiKhoanFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private TextView tvUserName;
+
 
     public TaiKhoanFragment() {
         // Required empty public constructor
@@ -61,6 +68,8 @@ public class TaiKhoanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_taikhoan, container, false);
+        View view = inflater.inflate(R.layout.fragment_taikhoan, container, false);
+        tvUserName = view.findViewById(R.id.tvUserName);
+        return view;
     }
 }
