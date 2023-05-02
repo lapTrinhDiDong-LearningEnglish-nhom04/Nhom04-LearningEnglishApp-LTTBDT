@@ -84,7 +84,7 @@ public class TuVungApdapter extends RecyclerView.Adapter<TuVungApdapter.TuVungAp
 
     private void luuTuVungVaoSoTay(Context context, int idND, int idTV) {
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             ContentValues cv = new ContentValues();
             cv.put("idND",idND);
             cv.put("idTuVung",idTV);
@@ -99,7 +99,7 @@ public class TuVungApdapter extends RecyclerView.Adapter<TuVungApdapter.TuVungAp
 
     private void xoaTuVungKhoiSoTay(Context context, int idND, int idTV) {
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String [] deleteArgs = {String.valueOf(idND),String.valueOf(idTV)};
             long kq= database.delete("ChiTietTuVung","idND=? and idTuVung=?",deleteArgs);
             if(kq!=-1)
@@ -112,7 +112,7 @@ public class TuVungApdapter extends RecyclerView.Adapter<TuVungApdapter.TuVungAp
 
     private boolean checkTuVungTrongSoTay(String tiengAnh, int idND) {
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {String.valueOf(idND)};
             Cursor c = database.rawQuery("SELECT tiengAnh FROM ChiTietTuVung c join TuVung t on c.idTuVung = t.idTuVung  WHERE idND = ?",args);
             while(c.moveToNext()){
@@ -130,7 +130,7 @@ public class TuVungApdapter extends RecyclerView.Adapter<TuVungApdapter.TuVungAp
     private int getIdTheoTiengAnh(String tiengAnh){
         int id=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {tiengAnh};
             Cursor c = database.rawQuery("SELECT idTuVung FROM TuVung WHERE tiengAnh = ?",args);
             while(c.moveToNext()){

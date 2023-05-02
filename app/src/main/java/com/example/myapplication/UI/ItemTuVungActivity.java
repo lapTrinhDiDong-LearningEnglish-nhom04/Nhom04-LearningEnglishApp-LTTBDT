@@ -109,7 +109,7 @@ public class ItemTuVungActivity extends AppCompatActivity {
     private List<TuVung> getListTuVung(Book book) {
         List<TuVung> list = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {book.getTitle()};
             Cursor c = database.rawQuery("SELECT tiengAnh,tiengViet FROM TuVung t join ChuDe c on t.idChuDe = c.idChuDe WHERE tenChuDe = ?",args);
             while(c.moveToNext()){
@@ -128,7 +128,7 @@ public class ItemTuVungActivity extends AppCompatActivity {
     private List<TuVung> getListTuVungBySearch(Book book,String keyWord) {
         List<TuVung> list = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {book.getTitle()};
             Cursor c = database.rawQuery("SELECT tiengAnh,tiengViet FROM TuVung t join ChuDe c on t.idChuDe = c.idChuDe WHERE tenChuDe = ? and tiengAnh like '%"+keyWord+"%'",args);
             while(c.moveToNext()){

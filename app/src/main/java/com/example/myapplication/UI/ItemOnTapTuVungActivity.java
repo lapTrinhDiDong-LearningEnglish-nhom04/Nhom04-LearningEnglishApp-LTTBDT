@@ -106,7 +106,7 @@ public class ItemOnTapTuVungActivity extends AppCompatActivity {
     private List<TuVung> getListTuVung(int idND) {
         List<TuVung> list = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {String.valueOf(idND)};
             Cursor c = database.rawQuery("SELECT tiengAnh, tiengViet FROM ChiTietTuVung c join TuVung t on c.idTuVung = t.idTuVung WHERE idND = ?",args);
             while(c.moveToNext()){
@@ -125,7 +125,7 @@ public class ItemOnTapTuVungActivity extends AppCompatActivity {
     private List<TuVung> getListTuVungBySearch(int idND,String keyWord) {
         List<TuVung> list = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {String.valueOf(idND)};
             Cursor c = database.rawQuery("SELECT tiengAnh, tiengViet FROM ChiTietTuVung c join TuVung t on c.idTuVung = t.idTuVung WHERE idND = ? and tiengAnh like '%"+keyWord+"%'",args);
             while(c.moveToNext()){

@@ -187,7 +187,7 @@ public class HomeFragment extends Fragment {
     private List<Book> getListCategoryTV() {
         List<Book> bookListTuVung = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             Cursor c = database.rawQuery("Select * from ChuDe",null);
             while(c.moveToNext()){
                 String ten = c.getString(1);
@@ -206,7 +206,7 @@ public class HomeFragment extends Fragment {
     private int getSoTuVungDaluu(int idND){
         int sl=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {String.valueOf(idND)};
             Cursor c = database.rawQuery("SELECT idND, COUNT(DISTINCT idTuVung) AS soLuong FROM ChiTietTuVung GROUP BY idND HAVING idND = ?",args);
             while(c.moveToNext()){
@@ -223,7 +223,7 @@ public class HomeFragment extends Fragment {
     private int getIdTheoUserName(String userName){
         int id=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {userName};
             Cursor c = database.rawQuery("SELECT idND FROM NguoiDung n JOIN TaiKhoan t on n.idTaiKhoan = t.userName WHERE userName = ?",args);
             while(c.moveToNext()){

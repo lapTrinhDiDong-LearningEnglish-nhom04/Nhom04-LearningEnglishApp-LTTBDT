@@ -105,7 +105,7 @@ public class LuyenThiFragment extends Fragment {
     private List<LuyenThi> getListLuyenThi() {
         List<LuyenThi> list= new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             Cursor c = database.rawQuery("SELECT * FROM LuyenThi",null);
             while(c.moveToNext()){
                 int id = c.getInt(0);
@@ -123,7 +123,7 @@ public class LuyenThiFragment extends Fragment {
     private int getSoCauDHTheoID(int id){
         int soCau=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {String.valueOf(id)};
             Cursor c = database.rawQuery("SELECT count(idDH) from LuyenThi t join LuyenThiDocHieu dh on t.idLT = dh.idLT GROUP BY t.idLT HAVING t.idLT = ?",args);
             while(c.moveToNext()){
@@ -140,7 +140,7 @@ public class LuyenThiFragment extends Fragment {
     private int getSoCauNHTheoID(int id){
         int soCau=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/file/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
+            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
             String[] args = {String.valueOf(id)};
             Cursor c = database.rawQuery("SELECT count(idNH) from LuyenThi t join LuyenThiNgheHieu nh on t.idLT = nh.idLT GROUP BY t.idLT HAVING t.idLT = ?",args);
             while(c.moveToNext()){
