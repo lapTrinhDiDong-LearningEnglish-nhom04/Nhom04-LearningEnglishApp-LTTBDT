@@ -3,13 +3,13 @@ package com.example.myapplication.UI;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.Adapter.BookAdapter;
 import com.example.myapplication.Adapter.CategoryAdapter;
+import com.example.myapplication.DB.Database;
 import com.example.myapplication.Entity.Book;
 import com.example.myapplication.Entity.Category;
 import com.example.myapplication.MainActivity;
@@ -49,7 +50,7 @@ public class HomeFragment extends Fragment {
     private BookAdapter categoryAdapterNH;
     private TextView tvSoTuVungDaLuu;
     private Button btnLuu;
-    private SQLiteDatabase database;
+    private Database db;
 
 
 
@@ -94,6 +95,7 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        db = new Database(HomeFragment.this.getContext());
     }
 
     @SuppressLint("MissingInflatedId")
@@ -127,7 +129,8 @@ public class HomeFragment extends Fragment {
         categoryAdapterNH = new BookAdapter(getListCategoryNH(), new InterfaceClickItemListener() {
             @Override
             public void onClickItem(Book book) {
-                onClickGoToDetailNH(book);
+                Log.d("TAG", "onClickItem: "+book.getResoutceId());
+                    onClickGoToDetailNH(book);
             }
 
             @Override
@@ -142,10 +145,13 @@ public class HomeFragment extends Fragment {
 
         // ĐỌC HIỂU
         recyclerViewDH  = view.findViewById(R.id.rcv_categoryDH);
+
+
         categoryAdapterDH = new BookAdapter(getListCategoryDH(), new InterfaceClickItemListener() {
             @Override
             public void onClickItem(Book book) {
-                onClickGoToDetailDH(book);
+                Log.d("TAG", "onClickItem: "+book.getResoutceId());
+                    onClickGoToDetailDH(book);
             }
 
             @Override
@@ -187,15 +193,13 @@ public class HomeFragment extends Fragment {
     private List<Book> getListCategoryTV() {
         List<Book> bookListTuVung = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            Cursor c = database.rawQuery("Select * from ChuDe",null);
+            Cursor c = db.query_hasresult("Select * from ChuDe");
             while(c.moveToNext()){
                 String ten = c.getString(1);
                 String hinhAnh = c.getString(2);
                 int resourceId = this.getContext().getResources().getIdentifier(hinhAnh, "drawable", this.getContext().getPackageName());
                 bookListTuVung.add(new Book(resourceId, ten));
             }
-            database.close();
             return bookListTuVung;
         }catch (Exception e){
             e.printStackTrace();
@@ -206,13 +210,10 @@ public class HomeFragment extends Fragment {
     private int getSoTuVungDaluu(int idND){
         int sl=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            String[] args = {String.valueOf(idND)};
-            Cursor c = database.rawQuery("SELECT idND, COUNT(DISTINCT idTuVung) AS soLuong FROM ChiTietTuVung GROUP BY idND HAVING idND = ?",args);
+            Cursor c = db.query_hasresult("SELECT idND, COUNT(DISTINCT idTuVung) AS soLuong FROM ChiTietTuVung GROUP BY idND HAVING idND = "+idND+"");
             while(c.moveToNext()){
                 sl = c.getInt(1);
             }
-            database.close();
             return sl;
         }catch (Exception e){
             e.printStackTrace();
@@ -223,13 +224,10 @@ public class HomeFragment extends Fragment {
     private int getIdTheoUserName(String userName){
         int id=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            String[] args = {userName};
-            Cursor c = database.rawQuery("SELECT idND FROM NguoiDung n JOIN TaiKhoan t on n.idTaiKhoan = t.userName WHERE userName = ?",args);
+            Cursor c = db.query_hasresult("SELECT idND FROM NguoiDung n JOIN TaiKhoan t on n.idTaiKhoan = t.userName WHERE userName = "+userName+"");
             while(c.moveToNext()){
                 id = c.getInt(0);
             }
-            database.close();
             return id;
         }catch (Exception e){
             e.printStackTrace();
@@ -250,17 +248,19 @@ public class HomeFragment extends Fragment {
         startActivity(intent);
     }
     private void onClickGoToDetailNH(Book book){
-        Intent intent = new Intent(getContext(), ItemTrangChuActivity.class);
+        Intent intent = new Intent(getContext(), ItemTrangChuNgheHieuActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("book_item", book);
+        bundle.putSerializable("ngheHieu_item", book);
+        bundle.putSerializable("id_item", book.getResoutceId());
         intent.putExtras(bundle);
         startActivity(intent);
     }
 
     private void onClickGoToDetailDH(Book book){
-        Intent intent = new Intent(getContext(), ItemTrangChuActivity.class);
+        Intent intent = new Intent(getContext(), ItemTrangChuDocHieuActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("book_item", book);
+        bundle.putSerializable("docHieu_item", book);
+        bundle.putSerializable("id_item", book.getResoutceId());
         intent.putExtras(bundle);
         startActivity(intent);
     }

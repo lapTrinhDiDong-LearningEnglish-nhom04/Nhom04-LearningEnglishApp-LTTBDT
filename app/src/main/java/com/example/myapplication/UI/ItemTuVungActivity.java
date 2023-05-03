@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.myapplication.Adapter.LuyenThiApdapter;
 import com.example.myapplication.Adapter.TuVungApdapter;
+import com.example.myapplication.DB.Database;
 import com.example.myapplication.Entity.Book;
 import com.example.myapplication.Entity.LuyenThi;
 import com.example.myapplication.Entity.SoCau;
@@ -34,7 +35,7 @@ public class ItemTuVungActivity extends AppCompatActivity {
     TextView tvTitleTuVung;
     EditText edtTimTuVung;
     Bundle bundle;
-    SQLiteDatabase database;
+    Database db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +44,7 @@ public class ItemTuVungActivity extends AppCompatActivity {
         tvArrowBack = findViewById(R.id.tvArrowBack);
         tvTitleTuVung = findViewById(R.id.tvTitleTuVung);
         edtTimTuVung = findViewById(R.id.edtTimTuVung);
-
-
+        db = new Database(ItemTuVungActivity.this);
         tvArrowBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,7 +61,7 @@ public class ItemTuVungActivity extends AppCompatActivity {
 
 
         recyclerView  = findViewById(R.id.rcv_categoryLuyenThi);
-        tuVungApdapter = new TuVungApdapter(getListTuVung(book), new InterfaceClickItemTuVungListener() {
+        tuVungApdapter = new TuVungApdapter(ItemTuVungActivity.this,getListTuVung(book), new InterfaceClickItemTuVungListener() {
             @Override
             public void onClickItemTuVung(TuVung tuVung) {
                 Toast.makeText(ItemTuVungActivity.this, "Chưa có", Toast.LENGTH_SHORT).show();
@@ -89,7 +89,7 @@ public class ItemTuVungActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                tuVungApdapter = new TuVungApdapter(getListTuVungBySearch(book, s.toString()), new InterfaceClickItemTuVungListener() {
+                tuVungApdapter = new TuVungApdapter(ItemTuVungActivity.this,getListTuVungBySearch(book, s.toString()), new InterfaceClickItemTuVungListener() {
                     @Override
                     public void onClickItemTuVung(TuVung tuVung) {
                         Toast.makeText(ItemTuVungActivity.this, "Chưa có", Toast.LENGTH_SHORT).show();
@@ -109,15 +109,12 @@ public class ItemTuVungActivity extends AppCompatActivity {
     private List<TuVung> getListTuVung(Book book) {
         List<TuVung> list = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            String[] args = {book.getTitle()};
-            Cursor c = database.rawQuery("SELECT tiengAnh,tiengViet FROM TuVung t join ChuDe c on t.idChuDe = c.idChuDe WHERE tenChuDe = ?",args);
+            Cursor c = db.query_hasresult("SELECT tiengAnh,tiengViet FROM TuVung t join ChuDe c on t.idChuDe = c.idChuDe WHERE tenChuDe = '"+book.getTitle()+"'");
             while(c.moveToNext()){
                 String tiengAnh = c.getString(0);
                 String tiengViet = c.getString(1);
                 list.add(new TuVung(tiengAnh,tiengViet));
             }
-            database.close();
             return list;
         }catch (Exception e){
             e.printStackTrace();
@@ -128,15 +125,12 @@ public class ItemTuVungActivity extends AppCompatActivity {
     private List<TuVung> getListTuVungBySearch(Book book,String keyWord) {
         List<TuVung> list = new ArrayList<>();
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            String[] args = {book.getTitle()};
-            Cursor c = database.rawQuery("SELECT tiengAnh,tiengViet FROM TuVung t join ChuDe c on t.idChuDe = c.idChuDe WHERE tenChuDe = ? and tiengAnh like '%"+keyWord+"%'",args);
+            Cursor c = db.query_hasresult("SELECT tiengAnh,tiengViet FROM TuVung t join ChuDe c on t.idChuDe = c.idChuDe WHERE tenChuDe = '"+book.getTitle()+"' and tiengAnh like '%"+keyWord+"%'");
             while(c.moveToNext()){
                 String tiengAnh = c.getString(0);
                 String tiengViet = c.getString(1);
                 list.add(new TuVung(tiengAnh,tiengViet));
             }
-            database.close();
             return list;
         }catch (Exception e){
             e.printStackTrace();

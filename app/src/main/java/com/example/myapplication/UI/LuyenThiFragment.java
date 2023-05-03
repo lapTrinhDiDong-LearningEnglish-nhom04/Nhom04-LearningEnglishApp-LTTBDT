@@ -2,7 +2,9 @@ package com.example.myapplication.UI;
 
 import android.content.Intent;
 import android.database.Cursor;
+
 import android.database.sqlite.SQLiteDatabase;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,6 +18,7 @@ import android.view.ViewGroup;
 
 import com.example.myapplication.Adapter.CategoryAdapter;
 import com.example.myapplication.Adapter.LuyenThiApdapter;
+import com.example.myapplication.DB.Database;
 import com.example.myapplication.Entity.Book;
 import com.example.myapplication.Entity.Category;
 import com.example.myapplication.Entity.LuyenThi;
@@ -33,7 +36,10 @@ import java.util.List;
 public class LuyenThiFragment extends Fragment {
     private RecyclerView recyclerView;
     private LuyenThiApdapter luyenThiApdapter;
-    private SQLiteDatabase database;
+    private Database db;
+
+
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -72,7 +78,7 @@ public class LuyenThiFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        db = new Database(LuyenThiFragment.this.getContext());
     }
 
     @Override
@@ -81,6 +87,7 @@ public class LuyenThiFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_luyenthi, container, false);
         recyclerView  = view.findViewById(R.id.rcv_categoryLuyenThi);
+        db = new Database(getContext());
 
         luyenThiApdapter = new LuyenThiApdapter(getListLuyenThi(), new InterfaceClickItemLuyenThiListener() {
             @Override
@@ -104,15 +111,13 @@ public class LuyenThiFragment extends Fragment {
 
     private List<LuyenThi> getListLuyenThi() {
         List<LuyenThi> list= new ArrayList<>();
-        try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            Cursor c = database.rawQuery("SELECT * FROM LuyenThi",null);
+        try{
+            Cursor c = db.query_hasresult("SELECT * FROM LuyenThi");
             while(c.moveToNext()){
                 int id = c.getInt(0);
                 String ten = c.getString(1);
                 list.add(new LuyenThi(ten,getSoCauDHTheoID(id)+getSoCauNHTheoID(id),getSoCauDHTheoID(id)+getSoCauNHTheoID(id)));
             }
-            database.close();
             return list;
         }catch (Exception e){
             e.printStackTrace();
@@ -123,13 +128,10 @@ public class LuyenThiFragment extends Fragment {
     private int getSoCauDHTheoID(int id){
         int soCau=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            String[] args = {String.valueOf(id)};
-            Cursor c = database.rawQuery("SELECT count(idDH) from LuyenThi t join LuyenThiDocHieu dh on t.idLT = dh.idLT GROUP BY t.idLT HAVING t.idLT = ?",args);
+            Cursor c = db.query_hasresult("SELECT count(idDH) from LuyenThi t join LuyenThiDocHieu dh on t.idLT = dh.idLT GROUP BY t.idLT HAVING t.idLT = "+id+"");
             while(c.moveToNext()){
                 soCau = c.getInt(0);
             }
-            database.close();
             return soCau;
         }catch (Exception e){
             e.printStackTrace();
@@ -140,13 +142,10 @@ public class LuyenThiFragment extends Fragment {
     private int getSoCauNHTheoID(int id){
         int soCau=0;
         try {
-            database = SQLiteDatabase.openDatabase("/data/data/com.example.myapplication/files/LearningEnglish.db",null,SQLiteDatabase.CREATE_IF_NECESSARY);
-            String[] args = {String.valueOf(id)};
-            Cursor c = database.rawQuery("SELECT count(idNH) from LuyenThi t join LuyenThiNgheHieu nh on t.idLT = nh.idLT GROUP BY t.idLT HAVING t.idLT = ?",args);
+            Cursor c = db.query_hasresult("SELECT count(idNH) from LuyenThi t join LuyenThiNgheHieu nh on t.idLT = nh.idLT GROUP BY t.idLT HAVING t.idLT = "+id+"");
             while(c.moveToNext()){
                 soCau = c.getInt(0);
             }
-            database.close();
             return soCau;
         }catch (Exception e){
             e.printStackTrace();
