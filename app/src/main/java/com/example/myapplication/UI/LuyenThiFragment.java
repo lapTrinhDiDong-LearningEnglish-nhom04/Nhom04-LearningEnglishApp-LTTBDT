@@ -2,6 +2,9 @@ package com.example.myapplication.UI;
 
 import android.content.Intent;
 import android.database.Cursor;
+
+import android.database.sqlite.SQLiteDatabase;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -33,8 +36,9 @@ import java.util.List;
 public class LuyenThiFragment extends Fragment {
     private RecyclerView recyclerView;
     private LuyenThiApdapter luyenThiApdapter;
+    private Database db;
 
-    Database db;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,7 +78,7 @@ public class LuyenThiFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        db = new Database(LuyenThiFragment.this.getContext());
     }
 
     @Override
@@ -107,22 +111,46 @@ public class LuyenThiFragment extends Fragment {
 
     private List<LuyenThi> getListLuyenThi() {
         List<LuyenThi> list= new ArrayList<>();
-        try {
-            Cursor cursor = db.query_hasresult("select * from LuyenThi");
-            if (cursor.getCount() != 0){
-                while (cursor.moveToNext()){
-                    String ten = cursor.getString(1);
-                    list.add(new LuyenThi(ten,2,2));
-                }
-            }else{
-                list.add(null);
+        try{
+            Cursor c = db.query_hasresult("SELECT * FROM LuyenThi");
+            while(c.moveToNext()){
+                int id = c.getInt(0);
+                String ten = c.getString(1);
+                list.add(new LuyenThi(ten,getSoCauDHTheoID(id)+getSoCauNHTheoID(id),getSoCauDHTheoID(id)+getSoCauNHTheoID(id)));
             }
-
-        }catch (Exception e) {
+            return list;
+        }catch (Exception e){
             e.printStackTrace();
         }
+        return null;
+    }
 
-        return  list;
+    private int getSoCauDHTheoID(int id){
+        int soCau=0;
+        try {
+            Cursor c = db.query_hasresult("SELECT count(idDH) from LuyenThi t join LuyenThiDocHieu dh on t.idLT = dh.idLT GROUP BY t.idLT HAVING t.idLT = "+id+"");
+            while(c.moveToNext()){
+                soCau = c.getInt(0);
+            }
+            return soCau;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int getSoCauNHTheoID(int id){
+        int soCau=0;
+        try {
+            Cursor c = db.query_hasresult("SELECT count(idNH) from LuyenThi t join LuyenThiNgheHieu nh on t.idLT = nh.idLT GROUP BY t.idLT HAVING t.idLT = "+id+"");
+            while(c.moveToNext()){
+                soCau = c.getInt(0);
+            }
+            return soCau;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override

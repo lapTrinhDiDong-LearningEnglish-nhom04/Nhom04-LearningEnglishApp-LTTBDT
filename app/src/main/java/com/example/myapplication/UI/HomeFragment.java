@@ -2,6 +2,7 @@ package com.example.myapplication.UI;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,17 +13,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.Adapter.BookAdapter;
 import com.example.myapplication.Adapter.CategoryAdapter;
+import com.example.myapplication.DB.Database;
 import com.example.myapplication.Entity.Book;
 import com.example.myapplication.Entity.Category;
+import com.example.myapplication.MainActivity;
 import com.example.myapplication.My_Interface.InterfaceClickItemListener;
 import com.example.myapplication.R;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,6 +48,11 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerViewNH;
     private BookAdapter categoryAdapterNH;
+    private TextView tvSoTuVungDaLuu;
+    private Button btnLuu;
+    private Database db;
+
+
 
 
 
@@ -51,6 +64,7 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -81,6 +95,7 @@ public class HomeFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        db = new Database(HomeFragment.this.getContext());
     }
 
     @SuppressLint("MissingInflatedId")
@@ -89,7 +104,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        tvSoTuVungDaLuu = view.findViewById(R.id.tvSoTuVungLuu);
+        tvSoTuVungDaLuu.setText(String.valueOf(getSoTuVungDaluu(1)));
         //TỪ VỰNG
         recyclerViewTV  = view.findViewById(R.id.rcv_categoryTV);
         categoryAdapterTV = new BookAdapter(getListCategoryTV(), new InterfaceClickItemListener() {
@@ -113,7 +129,8 @@ public class HomeFragment extends Fragment {
         categoryAdapterNH = new BookAdapter(getListCategoryNH(), new InterfaceClickItemListener() {
             @Override
             public void onClickItem(Book book) {
-                onClickGoToDetailNH(book);
+                Log.d("TAG", "onClickItem: "+book.getResoutceId());
+                    onClickGoToDetailNH(book);
             }
 
             @Override
@@ -146,6 +163,15 @@ public class HomeFragment extends Fragment {
         recyclerViewDH.setLayoutManager(linearLayoutManagerDH);
         categoryAdapterDH.setData(getListCategoryDH());
         recyclerViewDH.setAdapter(categoryAdapterDH);
+
+        //ÔN TẬP TỪ VỰNG
+        btnLuu = view.findViewById(R.id.btnOnTuVung);
+        btnLuu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickGoToDetailOTTV(1);
+            }
+        });
         return view;
     }
 
@@ -166,16 +192,47 @@ public class HomeFragment extends Fragment {
 
     private List<Book> getListCategoryTV() {
         List<Book> bookListTuVung = new ArrayList<>();
-        bookListTuVung.add(new Book( R.drawable.giao_thong,"Giao thông"));
-        bookListTuVung.add(new Book( R.drawable.thoi_tiet,"Bản tin \nthời tiết"));
-        bookListTuVung.add(new Book( R.drawable.meo3, "Xây dựng"));
-        bookListTuVung.add(new Book( R.drawable.xuat_nhap_khau,"Xuất nhập \nkhẩu"));
-        bookListTuVung.add(new Book( R.drawable.dong_vat, "Động vật"));
-        bookListTuVung.add(new Book( R.drawable.thoi_tiet,"Thời tiết"));
-        bookListTuVung.add(new Book( R.drawable.giai_tri, "Giải trí"));
-        bookListTuVung.add(new Book( R.drawable.du_lich,"Di lịch"));
+        try {
+            Cursor c = db.query_hasresult("Select * from ChuDe");
+            while(c.moveToNext()){
+                String ten = c.getString(1);
+                String hinhAnh = c.getString(2);
+                int resourceId = this.getContext().getResources().getIdentifier(hinhAnh, "drawable", this.getContext().getPackageName());
+                bookListTuVung.add(new Book(resourceId, ten));
+            }
+            return bookListTuVung;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-        return bookListTuVung;
+    private int getSoTuVungDaluu(int idND){
+        int sl=0;
+        try {
+            Cursor c = db.query_hasresult("SELECT idND, COUNT(DISTINCT idTuVung) AS soLuong FROM ChiTietTuVung GROUP BY idND HAVING idND = "+idND+"");
+            while(c.moveToNext()){
+                sl = c.getInt(1);
+            }
+            return sl;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int getIdTheoUserName(String userName){
+        int id=0;
+        try {
+            Cursor c = db.query_hasresult("SELECT idND FROM NguoiDung n JOIN TaiKhoan t on n.idTaiKhoan = t.userName WHERE userName = "+userName+"");
+            while(c.moveToNext()){
+                id = c.getInt(0);
+            }
+            return id;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     @Override
@@ -191,9 +248,10 @@ public class HomeFragment extends Fragment {
         startActivity(intent);
     }
     private void onClickGoToDetailNH(Book book){
-        Intent intent = new Intent(getContext(), ItemTrangChuActivity.class);
+        Intent intent = new Intent(getContext(), ItemTrangChuNgheHieuActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("book_item", book);
+        bundle.putSerializable("ngheHieu_item", book);
+        bundle.putSerializable("id_item", book.getResoutceId());
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -203,6 +261,14 @@ public class HomeFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putSerializable("docHieu_item", book);
         bundle.putSerializable("id_item", book.getResoutceId());
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    private void onClickGoToDetailOTTV(int idND){
+        Intent intent = new Intent(getContext(), ItemOnTapTuVungActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ontaptuVung_item", idND);
         intent.putExtras(bundle);
         startActivity(intent);
     }
